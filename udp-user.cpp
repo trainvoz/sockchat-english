@@ -26,7 +26,7 @@ void user_t::login(userdata_t* ud)
 
 	if (server.find_user(ud->m_id))
 	{
-		AddChat(0xFFDB0000, "[Ошибка] {ffffff}ЗАНЯТО НАХуй!1!! Раздвоение личности detected!111");
+		AddChat(0xFFDB0000, "[Error] {ffffff}ЗАНЯТО НАХуй!1!! Раздвоение личности detected!111"); // i dont know what this is supposed to mean lol. i'm leaving this here for now, might change when i know its purpose.
 		return;
 	}
 
@@ -127,7 +127,7 @@ void user_t::OnConnect()
 	chat.send_history(this);
 
 	if (m_status < 4)
-		chat.sendf(1, m_id, m_color, "%s {f7f488}подключился", nick());
+		chat.sendf(1, m_id, m_color, "%s {f7f488}connected", nick());
 
 	_printf("[login] user: %s[%d], ip: %s", m_nick.c_str(), m_id, m_addr.c_str());
 }
@@ -138,7 +138,7 @@ void user_t::OnDisconnect()
 		return;
 
 	if (m_status < 4)
-		chat.sendf(1, m_id, m_color, "%s {f7f488}отключился", nick());
+		chat.sendf(1, m_id, m_color, "%s {f7f488}left", nick());
 
 	server.on_hide(this);
 
@@ -203,10 +203,10 @@ void user_t::OnPacket(packet_t* packet)
 			if (b && !m_motd && !m_status)
 			{
 				AddChat(0xFFFFFA66, "");
-				AddChat(0xFFFFFA66, "\uf0eb {ffffff}Подсказка:");
-				AddChat(0xFFFFFA66, "    Для входа используйте команды:");
-				AddChat(0xFFFFFA66, "    \uf0a4    /auth {ffffff}<nick> <pass> {fffa66}- для авторизации");
-				AddChat(0xFFFFFA66, "    \uf0a4    /register {ffffff}<nick> <pass> {fffa66}- для регистрации");
+				AddChat(0xFFFFFA66, "\uf0eb {ffffff}Help:");
+				AddChat(0xFFFFFA66, "    Use the following commands to login:");
+				AddChat(0xFFFFFA66, "    \uf0a4    /login {ffffff}<nick> <pass> {fffa66}- for login");
+				AddChat(0xFFFFFA66, "    \uf0a4    /register {ffffff}<nick> <pass> {fffa66}- for registration");
 				AddChat(0xFFFFFA66, "");
 				m_motd = true;
 			}
@@ -219,7 +219,7 @@ void user_t::OnChat(const std::string& text)
 {
 	if (m_status == 0)
 	{
-		AddChat(0xFFDB0000, "[Ошибка] {ffffff}Требуется авторизация!");
+		AddChat(0xFFDB0000, "[Error] {ffffff}Login required!");
 		return;
 	}
 

@@ -4,19 +4,19 @@ void cmd_register(user_t* user, const char* nick, const char* pass)
 {
 	if (!nick_is_valid(nick, true))
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник не подходит!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Nickname is invalid!");
 		return;
 	}
 
 	if (strlen(pass) < 5)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Пароль слишком короткий!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Password is too short!");
 		return;
 	}
 
 	if (db.find_user(nick) != -1 || db.find_blacklist(nick))
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник занят!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Nickname already in use!");
 		return;
 	}
 
@@ -33,21 +33,21 @@ void cmd_auth(user_t* user, const char* nick, const char* pass)
 {
 	if (!nick_is_valid(nick, false) || strlen(pass) < 5)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Что-то введено не верно!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Something was entered incorrectly!");
 		return;
 	}
 
 	int id = db.find_user(nick);
 	if (id == -1)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Аккаунт не существует!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Account does not exist!");
 		return;
 	}
 
 	userdata_t ud;
 	if (!db.auth_user(id, md5(pass), &ud))
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Пароль неправильный!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Incorrect password!");
 		return;
 	}
 
@@ -58,18 +58,17 @@ void cmd_setpass(user_t* user, const char* pass)
 {
 	if (strlen(pass) < 5)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {FFFFFF}Пароль слишком короткий!");
+		user->AddChat(0xFFDB0000, "[Error] {FFFFFF}Password is too short!");
 		return;
 	}
 
 	db.set_password(user->m_id, md5(pass));
-	user->AddChat(0xFF9CFF9F, "Пароль изменён на {FFFFFF}\"%s\"{9cff9f}. Используйте {FFFFFF}F8 {9cff9f}чтобы сохранить.", pass);
+	user->AddChat(0xFF9CFF9F, "Password changed to {FFFFFF}\"%s\"{9cff9f}. Use {FFFFFF}F8 {9cff9f}to save.", pass);
 }
 
 void cmd_help(user_t* user)
 {
-	user->AddChat(0xFFF7F488, "Упс! Кто-то забил хер на содержимое этой команды.");
-	user->AddChat(0xFFF7F488, "Пожалуйтесь автору на автора, может исправит...");
+	user->AddChat(0xFFF7F488, "Упс! Кто-то забил хер на содержимое этой команды."); //todo: print all commands with their usage
 }
 
 void cmd_ping(user_t* user)
@@ -81,7 +80,7 @@ void cmd_time(user_t* user)
 {
 	struct tm tm_;
 	fill_timeinfo(&tm_);
-	user->AddChat(0xFFF7F488, "Время: {ffffff}%02d:%02d:%02d", tm_.tm_hour, tm_.tm_min, tm_.tm_sec);
+	user->AddChat(0xFFF7F488, "Time: {ffffff}%02d:%02d:%02d", tm_.tm_hour, tm_.tm_min, tm_.tm_sec);
 }
 
 void cmd_me(user_t* user, const char* text)
@@ -99,11 +98,11 @@ void cmd_todo(user_t* user, const char* text)
 	char part[2][256];
 	if (sscanf(text, "%[^*]*%[^\n]", part[0], part[1]) != 2)
 	{
-		user->AddChat(0xFFDB0000, "Используйте: {ffffff}/todo Фраза*Действие");
+		user->AddChat(0xFFDB0000, "Use: {ffffff}/todo Phrase*Action");
 		return;
 	}
 
-	chat.pushf(1, user->m_id, 0xFFFFFFFF, "'%s', - сказал(а) %s{ffffff}, {ff99ff}%s", part[0], user->nick(), part[1]);
+	chat.pushf(1, user->m_id, 0xFFFFFFFF, "'%s', - said(а) %s{ffffff}, {ff99ff}%s", part[0], user->nick(), part[1]);
 }
 
 void cmd_exit(user_t* user)
@@ -118,7 +117,7 @@ void cmd_clear(user_t* user)
 	server.Broadcast(&packet);
 
 	chat.clear();
-	chat.pushf(0, 0, 0xFFF02E2E, "Чат очищен администратором.");
+	chat.pushf(0, 0, 0xFFF02E2E, "Chat has been cleared by administrator.");
 }
 
 void cmd_update(user_t* user)
@@ -135,7 +134,7 @@ void cmd_erase(user_t* user, const char* text)
 	packet.write_string(text);
 	server.Broadcast(&packet);
 
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Удалено %d сообщений.", c);
+	user->AddChat(0xFF00FF00, "[Info] {ffffff}Deleted %d messages.", c);
 	_printf("[admin] %s: /erase \"%s\"", user->nick(), text);
 }
 
@@ -147,7 +146,7 @@ void cmd_clearuser(user_t* user, int id)
 	packet.write<id_t>(id);
 	server.Broadcast(&packet);
 
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Удалено %d сообщений.", c);
+	user->AddChat(0xFF00FF00, "[Info] {ffffff}Deleted %d messages.", c);
 	_printf("[admin] %s: /clear_user %d -> count: %d", user->nick(), id, c);
 }
 
@@ -155,14 +154,14 @@ void cmd_msg(user_t* user, int id, const char* text)
 {
 	if (id == user->m_id)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Абонент не абонент!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Can't pm yourself lol!");
 		return;
 	}
 
 	user_t* usr = server.find_user(id);
 	if (usr == nullptr)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Пользователь оффлайн!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}User is offline!");
 		return;
 	}
 
@@ -173,14 +172,14 @@ void cmd_msg_re(user_t* user, const char* text)
 {
 	if (user->m_pm_id == -1)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Некому отвечать");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}No one to reply");
 		return;
 	}
 
 	user_t* usr = server.find_user(user->m_pm_id);
 	if (usr == nullptr)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Пользователь оффлайн!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}User is offline!");
 		return;
 	}
 
@@ -192,13 +191,13 @@ user_t* find_target(user_t* user, int id)
 	user_t* target = server.find_user(id);
 	if (target == nullptr)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Пользователь не найден!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}User not found!");
 		return nullptr;
 	}
 
 	if (target->m_id != user->m_id && target->m_status >= user->m_status)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Нет доступа!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}No access!");
 		return nullptr;
 	}
 
@@ -265,7 +264,7 @@ void cmd_setcolor(user_t* user, int id, color_t color)
 		return;
 
 	usr->set_color(color);
-	user->AddChat(0xFFDB0000, ">> Установлен цвет для %s", usr->nick_c());
+	user->AddChat(0xFFDB0000, ">> Color set for %s", usr->nick_c());
 
 	_printf("[admin] %s: /setcolor %d %x", user->nick(), id, color);
 }
@@ -278,17 +277,17 @@ void cmd_setnick(user_t* user, int id, const char* nick)
 
 	if (db.find_user(nick) != -1)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник занят!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Nickname already in use!");
 		return;
 	}
 //	if (!nick_is_valid(nick, false))
 //	{
-//		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник не подходит!");
+//		user->AddChat(0xFFDB0000, "[Error] {ffffff}Nickname is invalid!");
 //		return;
 //	}
 
 	usr->set_nick(nick);
-	user->AddChat(0xFFDB0000, ">> Установлен ник для %s", usr->nick_c());
+	user->AddChat(0xFFDB0000, ">> Nickname set for %s", usr->nick_c());
 
 	_printf("[admin] %s: /setnick %d \"%s\"", user->nick(), id, nick);
 }
@@ -302,12 +301,12 @@ void cmd_setprefix(user_t* user, int id, const char* prefix)
 	if (!strcmp(prefix, "-"))
 	{
 		usr->set_prefix("");
-		user->AddChat(0xFFDB0000, ">> Сброшен префикс для %s", usr->nick_c());
+		user->AddChat(0xFFDB0000, ">> Prefix reset for %s", usr->nick_c());
 	}
 	else
 	{
 		usr->set_prefix(prefix);
-		user->AddChat(0xFFDB0000, ">> Установлен префикс для %s", usr->nick_c());
+		user->AddChat(0xFFDB0000, ">> Prefix set for %s", usr->nick_c());
 	}
 
 	_printf("[admin] %s: /setprefix %d \"%s\"", user->nick(), id, prefix);
@@ -321,12 +320,12 @@ void cmd_setstatus(user_t* user, int id, int status)
 
 	if (status < 1 || status >= user->m_status || user->m_id == id)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Невозможно установить статус!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Unable to set status!");
 		return;
 	}
 
 	usr->set_status(status);
-	user->AddChat(0xFFDB0000, ">> Установлен статус {ffffff}%d {db0000}для %s", status, usr->nick_c());
+	user->AddChat(0xFFDB0000, ">> Status set {ffffff}%d {db0000}for %s", status, usr->nick_c());
 
 	_printf("[admin] %s: /setstatus %d %d", user->nick(), id, status);
 }
@@ -343,7 +342,7 @@ void cmd_rainbow(user_t* user, int id)
 void cmd_hideme(user_t* user)
 {
 	user->m_hideme ^= 1;
-	user->AddChat(0xFFDB0000, ">> Неведимка %s.", user->m_hideme ? "включена" : "выключена");
+	user->AddChat(0xFFDB0000, ">> Invisible %s.", user->m_hideme ? "Included" : "off");
 	user->udn();
 	server.on_count();
 }
@@ -372,20 +371,20 @@ void cmd_nick(user_t* user, const char* nick)
 {
 	if (!nick_is_valid(nick, true))
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник не подходит!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Nickname is invalid!");
 		return;
 	}
 
 	if (db.find_user(nick) != -1)
 	{
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Ник занят!");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Nickname already in use!");
 		return;
 	}
 
 	_printf("[nick] %s -> %s", user->nick(), nick);
 
 	user->set_nick(nick);
-	user->AddChat(0xFF00FF00, "[Информация] {ffffff}Установлен новый ник: %s", nick);
+	user->AddChat(0xFF00FF00, "[Info] {ffffff}Nickname changed: %s", nick);
 }
 
 void cmd_online(user_t* _user)

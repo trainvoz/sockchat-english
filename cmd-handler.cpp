@@ -88,7 +88,7 @@ public:
 
 void cmd_handler_t::send_usage(user_t* user, cmdlist_t::iterator it)
 {
-	user->AddChat(0xFFDB0000, "Используйте: {ffffff}/%s %s", it->first.c_str(), it->second->hint);
+	user->AddChat(0xFFDB0000, "Use: {ffffff}/%s %s", it->first.c_str(), it->second->hint);
 }
 
 void cmd_handler_t::add_cmd(std::string name, cmd_t* desc)
@@ -109,7 +109,7 @@ void cmd_handler_t::run(user_t* user, const std::string& cmd, const std::string&
 {
 	auto res = m_cmds.find(cmd);
 	if (res == m_cmds.end()) {
-		user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Неизвестная команда.");
+		user->AddChat(0xFFDB0000, "[Error] {ffffff}Unknown team.");
 		return;
 	}
 
@@ -117,13 +117,13 @@ void cmd_handler_t::run(user_t* user, const std::string& cmd, const std::string&
 
 	if (user->m_status == 0) {
 		if (_cmd->status != 0) {
-			user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Требуется авторизация!");
+			user->AddChat(0xFFDB0000, "[Error] {ffffff}Authorization required!");
 			return;
 		}
 	}
 	else {
 		if (_cmd->status == 0 || user->m_status < _cmd->status) {
-			user->AddChat(0xFFDB0000, "[Ошибка] {ffffff}Нет доступа!");
+			user->AddChat(0xFFDB0000, "[Error] {ffffff}No access!");
 			return;
 		}
 	}

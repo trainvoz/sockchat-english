@@ -133,8 +133,8 @@ void udpserver_t::MakeBanIP(user_t* user)
 
 void udpserver_t::SendPM(user_t* src, user_t* dst, const std::string& text)
 {
-	src->AddChat(0xFFF7F488, "[Я >> %s[%d]] {ffffff}%s", dst->m_nick.c_str(), dst->m_id, text.c_str());
-	dst->AddChat(0xFFF7F488, "[%s[%d] >> Я] {ffffff}%s", src->m_nick.c_str(), dst->m_id, text.c_str());
+	src->AddChat(0xFFF7F488, "[I >> %s[%d]] {ffffff}%s", dst->m_nick.c_str(), dst->m_id, text.c_str());
+	dst->AddChat(0xFFF7F488, "[%s[%d] >> I] {ffffff}%s", src->m_nick.c_str(), dst->m_id, text.c_str());
 	src->m_pm_id = dst->m_id;
 	dst->m_pm_id = src->m_id;
 	dst->send_notify();
@@ -158,7 +158,7 @@ void udpserver_t::on_count()
 	}
 
 	char buf[64];
-	snprintf(buf, 64, "\uf007 %d / %d | Онлайн:", users, total);
+	snprintf(buf, 64, "\uf007 %d / %d | Online:", users, total);
 	m_htHeader = buf;
 	
 	packet_t packet(id_ht_header_set);
