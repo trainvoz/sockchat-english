@@ -269,6 +269,17 @@ void cmd_setcolor(user_t* user, int id, color_t color)
 	_printf("[admin] %s: /setcolor %d %x", user->nick(), id, color);
 }
 
+void cmd_color(user_t* user, color_t color)
+{
+	if (user == nullptr)
+		return;
+
+	user->set_color(color);
+	user->AddChat(0xFFDB0000, ">> Color set to %s", user->nick_c());
+
+	_printf("[user] %s: /setcolor %d %x", user->nick(), user->m_id, color);
+}
+
 void cmd_setnick(user_t* user, int id, const char* nick)
 {
 	user_t* usr = find_target(user, id);
@@ -310,6 +321,25 @@ void cmd_setprefix(user_t* user, int id, const char* prefix)
 	}
 
 	_printf("[admin] %s: /setprefix %d \"%s\"", user->nick(), id, prefix);
+}
+
+void cmd_prefix(user_t* user, const char* prefix)
+{
+	if (user == nullptr)
+		return;
+
+	if (!strcmp(prefix, "-"))
+	{
+		user->set_prefix("");
+		user->AddChat(0xFFDB0000, ">> Prefix reset to %s", user->nick_c());
+	}
+	else
+	{
+		user->set_prefix(prefix);
+		user->AddChat(0xFFDB0000, ">> Prefix set to %s", user->nick_c());
+	}
+
+	_printf("[user] %s: /setprefix %d \"%s\"", user->nick(), user->m_id, prefix);
 }
 
 void cmd_setstatus(user_t* user, int id, int status)
@@ -426,7 +456,9 @@ void init_commands()
 	cmds.add({ "cu", "clear_user" },	new cmd_t{ 3, (void*)cmd_clearuser,			"d",	"<id>"			});
 	cmds.add({ "destroy" },				new cmd_t{ 4, (void*)cmd_destroy,			"d",	"<id>"			});
 	cmds.add({ "setcolor" },			new cmd_t{ 4, (void*)cmd_setcolor,			"dx",	"<id> <color>"	});
+	cmds.add({ "color" },			    new cmd_t{ 1, (void*)cmd_color,			    "x",	"<hex color code>"	});
 	cmds.add({ "setprefix" },			new cmd_t{ 4, (void*)cmd_setprefix,			"d*",	"<id> <prefix>"	});
+	cmds.add({ "prefix" },			    new cmd_t{ 1, (void*)cmd_prefix,			"*",	"<prefix>"	    });
 	cmds.add({ "setnick" },				new cmd_t{ 5, (void*)cmd_setnick,			"ds",	"<id> <nick>"	});
 	cmds.add({ "setstatus" },			new cmd_t{ 3, (void*)cmd_setstatus,			"dd",	"<id> <status>"	});
 	cmds.add({ "rainbow", "makegay" },	new cmd_t{ 5, (void*)cmd_rainbow,			"d",	"<id>"			});
