@@ -442,7 +442,7 @@ void init_commands()
 	cmds.add({ "me" },					new cmd_t{ 1, (void*)cmd_me,				"*",	"<text>"		});
 	cmds.add({ "do" },					new cmd_t{ 1, (void*)cmd_do,				"*",	"<text>"		});
 	cmds.add({ "todo" },				new cmd_t{ 1, (void*)cmd_todo,				"*",	"<text>*<text>"	});
-	cmds.add({ "exit", "quit" },		new cmd_t{ 2, (void*)cmd_exit,				"",		""				});
+	cmds.add({ "quit", "logout" },		new cmd_t{ 1, (void*)cmd_exit,				"",		""				});
 	cmds.add({ "update" },				new cmd_t{ 2, (void*)cmd_update,			"",		""				});
 	cmds.add({ "vr", "vip" },			new cmd_t{ 2, (void*)cmd_chat_vip,			"*",	"<text>"		});
 	cmds.add({ "a" },					new cmd_t{ 3, (void*)cmd_chat_admin,		"*",	"<text>"		});

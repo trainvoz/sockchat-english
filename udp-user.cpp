@@ -203,10 +203,10 @@ void user_t::OnPacket(packet_t* packet)
 			if (b && !m_motd && !m_status)
 			{
 				AddChat(0xFFFFFA66, "");
-				AddChat(0xFFFFFA66, "\uf0eb {ffffff}Help:");
-				AddChat(0xFFFFFA66, "    Use the following commands to login:");
-				AddChat(0xFFFFFA66, "    \uf0a4    /login {ffffff}<nick> <pass> {fffa66}- for login");
-				AddChat(0xFFFFFA66, "    \uf0a4    /register {ffffff}<nick> <pass> {fffa66}- for registration");
+				AddChat(0xFFFFFA66, "{ffffff}Help:");
+				AddChat(0xFFFFFA66, "Use the following commands to login:");
+				AddChat(0xFFFFFA66, "/login {ffffff}<nick> <pass> {fffa66}- for login");
+				AddChat(0xFFFFFA66, "/register {ffffff}<nick> <pass> {fffa66}- for registration");
 				AddChat(0xFFFFFA66, "");
 				m_motd = true;
 			}

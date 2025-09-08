@@ -20,7 +20,7 @@ std::string urlencode(std::string in);
 
 typedef struct _server_config_t
 {
-	std::string name = "{ffffff}Sockchat v2.0 ({7070ff}C++{ffffff})";
+	std::string name = "{ffffff}Sockchat v2.0 ({7070ff}C++{ffffff}) by redcode & trainvoz";
 	int			port = 8000;
 	int			slots = 500;
 	std::string logfile = "";
